@@ -183,7 +183,7 @@ describe('Graph', () => {
 
     function resolveAfter(output: string, time: number) {
       setTimeout(() => {
-        graph.getNodeData(output).markAsReady();
+        graph.getNodeData(output).success();
       }, time);
     }
 
