@@ -160,10 +160,10 @@ export async function executeCodegen(input: CodegenContext | Types.Config): Prom
           return {
             title: hasPreset ? `Generate to ${filename} (using EXPERIMENTAL preset "${outputConfig.preset}")` : `Generate ${filename}`,
             task: () => {
-              const outputFileTemplateConfig = outputConfig.config || {};
-              const outputDocuments: Types.DocumentFile[] = [];
               let outputSchemaAst: GraphQLSchema;
               let outputSchema: DocumentNode;
+              const outputFileTemplateConfig = outputConfig.config || {};
+              const outputDocuments: Types.DocumentFile[] = [];
               const outputSpecificSchemas = normalizeInstanceOrArray<Types.Schema>(outputConfig.schema);
               const outputSpecificDocuments = normalizeInstanceOrArray<Types.OperationDocument>(outputConfig.documents);
 
@@ -190,7 +190,7 @@ export async function executeCodegen(input: CodegenContext | Types.Config): Prom
                         outputSchema = parse(printSchemaWithDirectives(outputSchemaAst));
                       },
                       filename,
-                      outputData.markAsFailed
+                      outputData.fail
                     ),
                   },
                   {
@@ -209,7 +209,7 @@ export async function executeCodegen(input: CodegenContext | Types.Config): Prom
                         }
                       },
                       filename,
-                      outputData.markAsFailed
+                      outputData.fail
                     ),
                   },
                   {
@@ -276,16 +276,17 @@ export async function executeCodegen(input: CodegenContext | Types.Config): Prom
 
                         await Promise.all(outputs.map(process));
 
-                        outputData.markAsReady();
+                        outputData.success();
                       },
                       filename,
-                      outputData.markAsFailed
+                      outputData.fail
                     ),
                   },
                 ],
                 {
                   // it stops when one of tasks failed
                   exitOnError: true,
+                  concurrent: false,
                 }
               );
             },
